@@ -1,0 +1,398 @@
+﻿@{
+    ViewBag.Title = "Login";
+    Layout = "~/Views/Shared/Layouts/_LoginLayout.cshtml";
+}
+<div class="d-flex flex-column flex-root">
+    <div class="login login-4 login-signin-on d-flex flex-row-fluid" id="kt_login">
+        <div class="d-flex flex-center flex-row-fluid bgi-size-cover bgi-position-top bgi-no-repeat" style="background-image: url('../../assets/media/bg/bg11.jpg');">
+            <div class="login-form text-center p-7 position-relative overflow-hidden">
+                <div class="d-flex flex-center mb-15">
+                    <a href="#">
+                        <img src="~/assets/Logos/gymnicacode.png" class="max-h-150px" alt="" />
+                    </a>
+                </div>
+                <div class="login-signin">
+                    <div class="mb-20">
+                        <h3>GymNicaCode</h3>
+                    </div>
+                    <form class="form" id="kt_login_signin_form">
+                        <div class="form-group mb-5">
+                            <input class="form-control h-auto form-control-solid py-4 px-8" type="text" placeholder="Email" name="username" autocomplete="off" id="EmailLogin" />
+                        </div>
+                        <div class="form-group mb-5">
+                            <input class="form-control h-auto form-control-solid py-4 px-8" type="password" placeholder="Password" name="password" id="PassLogin" />
+                        </div>
+                        <div class="form-group d-flex flex-wrap justify-content-between align-items-center">
+                            <div class="checkbox-inline">
+                                <label class="checkbox m-0 text-muted">
+                                    <input type="checkbox" name="remember" id="RecordarLogin" />
+                                    <span></span>Recordarme
+                                </label>
+                            </div>
+                            <a href="javascript:;" id="kt_login_forgot" class="text-muted text-hover-primary">Olvide mi contraseña?</a>
+                        </div>
+                        <button id="kt_login_signin_submit" class="btn btn-primary font-weight-bold px-9 py-4 my-3 mx-4">Ingresar</button>
+                    </form>
+                    <div class="mt-10">
+                        <span class="opacity-70 mr-4">Aún no tienes una cuenta?</span>
+                        <a href="javascript:;" id="kt_login_signup" class="text-muted text-hover-primary font-weight-bold">Inscribete ahora!</a>
+                    </div>
+                    @Html.Hidden("RedirectTo", Url.Action("Index", "Employee"));
+                </div>
+                <div class="login-signup">
+                    <div class="mb-20">
+                        <h3>Maranatha Cargo Express</h3>
+                    </div>
+                    <form class="form" id="kt_login_signup_form">
+                        <div class="form-group mb-5">
+                            <input class="form-control h-auto form-control-solid py-4 px-8" type="text" placeholder="Fullname" name="fullname" />
+                        </div>
+                        <div class="form-group mb-5">
+                            <input class="form-control h-auto form-control-solid py-4 px-8" type="text" placeholder="Email" name="email" autocomplete="off" />
+                        </div>
+                        <div class="form-group mb-5">
+                            <input class="form-control h-auto form-control-solid py-4 px-8" type="password" placeholder="Password" name="password" />
+                        </div>
+                        <div class="form-group mb-5">
+                            <input class="form-control h-auto form-control-solid py-4 px-8" type="password" placeholder="Confirm Password" name="cpassword" />
+                        </div>
+                        <div class="form-group mb-5 text-left">
+                            <div class="checkbox-inline">
+                                <label class="checkbox m-0">
+                                    <input type="checkbox" name="agree" />
+                                    <span></span>Acepto los terminos y condiciones.
+                                </label>
+                            </div>
+                            <div class="form-text text-muted text-center"></div>
+                        </div>
+                        <div class="form-group d-flex flex-wrap flex-center mt-10">
+                            <button id="kt_login_signup_submit" class="btn btn-primary font-weight-bold px-9 py-4 my-3 mx-2">Ingresar</button>
+                            <button id="kt_login_signup_cancel" class="btn btn-light-primary font-weight-bold px-9 py-4 my-3 mx-2">Cancelar</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="login-forgot">
+                    <div class="mb-20">
+                        <h3>Olvide mi contraseña ?</h3>
+                        <div class="text-muted font-weight-bold">Ingrese su correo para reiniciar su contraseña</div>
+                    </div>
+                    <form class="form" id="kt_login_forgot_form">
+                        <div class="form-group mb-10">
+                            <input class="form-control form-control-solid h-auto py-4 px-8" type="text" placeholder="Email" name="email" autocomplete="off" />
+                        </div>
+                        <div class="form-group d-flex flex-wrap flex-center mt-10">
+                            <button id="kt_login_forgot_submit" class="btn btn-primary font-weight-bold px-9 py-4 my-3 mx-2">Enviar</button>
+                            <button id="kt_login_forgot_cancel" class="btn btn-light-primary font-weight-bold px-9 py-4 my-3 mx-2">Cancelar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        "use strict";
+
+        // Class Definition
+        var KTLogin = function () {
+            var _login;
+
+            var _showForm = function (form) {
+                var cls = 'login-' + form + '-on';
+                var form = 'kt_login_' + form + '_form';
+
+                _login.removeClass('login-forgot-on');
+                _login.removeClass('login-signin-on');
+                _login.removeClass('login-signup-on');
+
+                _login.addClass(cls);
+
+                KTUtil.animateClass(KTUtil.getById(form), 'animate__animated animate__backInUp');
+            }
+
+            var _handleSignInForm = function () {
+                var validation;
+
+                // Init form validation rules. For more info check the FormValidation plugin's official documentation:https://formvalidation.io/
+                validation = FormValidation.formValidation(
+                    KTUtil.getById('kt_login_signin_form'),
+                    {
+                        fields: {
+                            username: {
+                                validators: {
+                                    notEmpty: {
+                                        message: 'Correo es requerido'
+                                    }
+                                }
+                            },
+                            password: {
+                                validators: {
+                                    notEmpty: {
+                                        message: 'Password es requerida'
+                                    }
+                                }
+                            }
+                        },
+                        plugins: {
+                            trigger: new FormValidation.plugins.Trigger(),
+                            submitButton: new FormValidation.plugins.SubmitButton(),
+                            //defaultSubmit: new FormValidation.plugins.DefaultSubmit(), // Uncomment this line to enable normal button submit after form validation
+                            bootstrap: new FormValidation.plugins.Bootstrap()
+                        }
+                    }
+                );
+
+                $('#kt_login_signin_submit').on('click', function (e) {
+                    e.preventDefault();
+
+                    validation.validate().then(function (status) {
+                        if (status == 'Valid') {
+                            Logear();
+                        } else {
+                            swal.fire({
+                                text: "Lo sentimos, parece que se han detectado algunos errores, intentalo de nuevo.",
+                                icon: "error",
+                                buttonsStyling: false,
+                                confirmButtonText: "Entiendo!",
+                                customClass: {
+                                    confirmButton: "btn font-weight-bold btn-light-primary"
+                                }
+                            }).then(function () {
+                                KTUtil.scrollTop();
+                            });
+                        }
+                    });
+                });
+
+                // Handle forgot button
+                $('#kt_login_forgot').on('click', function (e) {
+                    e.preventDefault();
+                    _showForm('forgot');
+                });
+
+                // Handle signup
+                $('#kt_login_signup').on('click', function (e) {
+                    e.preventDefault();
+                    _showForm('signup');
+                });
+            }
+
+            var _handleSignUpForm = function (e) {
+                var validation;
+                var form = KTUtil.getById('kt_login_signup_form');
+
+                // Init form validation rules. For more info check the FormValidation plugin's official documentation:https://formvalidation.io/
+                validation = FormValidation.formValidation(
+                    form,
+                    {
+                        fields: {
+                            fullname: {
+                                validators: {
+                                    notEmpty: {
+                                        message: 'Se requiere nombre de usuario'
+                                    }
+                                }
+                            },
+                            email: {
+                                validators: {
+                                    notEmpty: {
+                                        message: 'Se requiere Direccion de correo electronico'
+                                    },
+                                    emailAddress: {
+                                        message: 'El valor no es una direccion de correo electronico valida'
+                                    }
+                                }
+                            },
+                            password: {
+                                validators: {
+                                    notEmpty: {
+                                        message: 'La password es requerida'
+                                    }
+                                }
+                            },
+                            cpassword: {
+                                validators: {
+                                    notEmpty: {
+                                        message: 'Se requiere la confirmacion de la password.'
+                                    },
+                                    identical: {
+                                        compare: function () {
+                                            return form.querySelector('[name="password"]').value;
+                                        },
+                                        message: 'La password y su confirmacion no son lo mismo.'
+                                    }
+                                }
+                            },
+                            agree: {
+                                validators: {
+                                    notEmpty: {
+                                        message: 'Debe aceptar los Terminos y Condiciones'
+                                    }
+                                }
+                            },
+                        },
+                        plugins: {
+                            trigger: new FormValidation.plugins.Trigger(),
+                            bootstrap: new FormValidation.plugins.Bootstrap()
+                        }
+                    }
+                );
+
+                $('#kt_login_signup_submit').on('click', function (e) {
+                    e.preventDefault();
+
+                    validation.validate().then(function (status) {
+                        if (status == 'Valid') {
+                            swal.fire({
+                                text: "¡Todo es genial! Ahora envia este formulario",
+                                icon: "success",
+                                buttonsStyling: false,
+                                confirmButtonText: "Entiendo!",
+                                customClass: {
+                                    confirmButton: "btn font-weight-bold btn-light-primary"
+                                }
+                            }).then(function () {
+                                KTUtil.scrollTop();
+                            });
+                        } else {
+                            swal.fire({
+                                text: "Lo sentimos, parece que se han detectado algunos errores, intentalo de nuevo.",
+                                icon: "error",
+                                buttonsStyling: false,
+                                confirmButtonText: "Entiendo!",
+                                customClass: {
+                                    confirmButton: "btn font-weight-bold btn-light-primary"
+                                }
+                            }).then(function () {
+                                KTUtil.scrollTop();
+                            });
+                        }
+                    });
+                });
+
+                // Handle cancel button
+                $('#kt_login_signup_cancel').on('click', function (e) {
+                    e.preventDefault();
+
+                    _showForm('signin');
+                });
+            }
+
+            var _handleForgotForm = function (e) {
+                var validation;
+
+                // Init form validation rules. For more info check the FormValidation plugin's official documentation:https://formvalidation.io/
+                validation = FormValidation.formValidation(
+                    KTUtil.getById('kt_login_forgot_form'),
+                    {
+                        fields: {
+                            email: {
+                                validators: {
+                                    notEmpty: {
+                                        message: 'Se requiere Direccion de correo electronico'
+                                    },
+                                    emailAddress: {
+                                        message: 'El valor no es una direccion de correo electronico valida'
+                                    }
+                                }
+                            }
+                        },
+                        plugins: {
+                            trigger: new FormValidation.plugins.Trigger(),
+                            bootstrap: new FormValidation.plugins.Bootstrap()
+                        }
+                    }
+                );
+
+                // Handle submit button
+                $('#kt_login_forgot_submit').on('click', function (e) {
+                    e.preventDefault();
+
+                    validation.validate().then(function (status) {
+                        if (status == 'Valid') {
+                            // Submit form
+                            KTUtil.scrollTop();
+                        } else {
+                            swal.fire({
+                                text: "Lo sentimos, parece que se han detectado algunos errores, intentalo de nuevo.",
+                                icon: "error",
+                                buttonsStyling: false,
+                                confirmButtonText: "Entiendo!",
+                                customClass: {
+                                    confirmButton: "btn font-weight-bold btn-light-primary"
+                                }
+                            }).then(function () {
+                                KTUtil.scrollTop();
+                            });
+                        }
+                    });
+                });
+
+                // Handle cancel button
+                $('#kt_login_forgot_cancel').on('click', function (e) {
+                    e.preventDefault();
+
+                    _showForm('signin');
+                });
+            }
+
+            // Public Functions
+            return {
+                // public functions
+                init: function () {
+                    _login = $('#kt_login');
+
+                    _handleSignInForm();
+                    _handleSignUpForm();
+                    _handleForgotForm();
+                }
+            };
+        }();
+
+        // Class Initialization
+        jQuery(document).ready(function () {
+            KTLogin.init();
+        });
+
+    </script>
+    <script>
+        function Logear() {
+            var urlRedirect = $("#RedirectTo").val();
+
+            var Email = $("#EmailLogin").val();
+            var Pass = $("#PassLogin").val();
+            var Recordar = $("#RecordarLogin").val();
+            var user = {
+                Email: Email,
+                Password: Pass,
+                Recordar: Recordar
+            };
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("Login", "Login")',
+                dataType: 'json',
+                data: user,
+                async:false,
+                success: function (data) {
+                    location.href = urlRedirect;
+                },
+                error: function (ex) {
+                    swal.fire({
+                        text: "Correo o contraseña incorrecto.",
+                        icon: "error",
+                        buttonsStyling: false,
+                        confirmButtonText: "Entiendo!",
+                        customClass: {
+                            confirmButton: "btn font-weight-bold btn-light-primary"
+                        }
+                    }).then(function () {
+                        KTUtil.scrollTop();
+                    });
+                }
+            });
+
+        }
+    </script>
+}

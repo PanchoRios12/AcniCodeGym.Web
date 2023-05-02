@@ -1,0 +1,15 @@
+﻿.img {
+    background-image: url("../media/svg/landing/landing.svg");
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: fixed;
+    background-size: 100% auto;
+    height:100%
+}
+.div-button {
+    margin-top: 70px;
+}
+
+.div-card {
+    margin-top: 150px;
+}
